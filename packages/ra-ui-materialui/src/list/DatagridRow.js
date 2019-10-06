@@ -1,17 +1,15 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component, Fragment, isValidElement } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
-import IconButton from '@material-ui/core/IconButton';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import Checkbox from '@material-ui/core/Checkbox';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import classnames from 'classnames';
 import { linkToRecord } from 'ra-core';
 
 import DatagridCell from './DatagridCell';
+import ExpandRowButton from './ExpandRowButton';
 
 const sanitizeRestProps = ({
     basePath,
@@ -40,10 +38,10 @@ class DatagridRow extends Component {
         };
     }
 
-    coomponentDidUpdate = (prevProps, prevState) => {
+    componentDidUpdate = (prevProps, prevState) => {
         const colSpan = this.computeColSpan(this.props);
         if (colSpan !== prevState.colSpan) {
-            this.setState({ colspan });
+            this.setState({ colSpan });
         }
     };
 
@@ -57,21 +55,21 @@ class DatagridRow extends Component {
         event.stopPropagation();
     };
 
-    handleClick = async () => {
+    handleClick = async event => {
         const { basePath, rowClick, id, record } = this.props;
 
         if (!rowClick) return;
 
         if (typeof rowClick === 'function') {
             const path = await rowClick(id, basePath, record);
-            this.handleRedirection(path);
+            this.handleRedirection(path, event);
             return;
         }
 
-        this.handleRedirection(rowClick);
+        this.handleRedirection(rowClick, event);
     };
 
-    handleRedirection = path => {
+    handleRedirection = (path, event) => {
         const { basePath, id, push } = this.props;
 
         if (path === 'edit') {
@@ -82,6 +80,11 @@ class DatagridRow extends Component {
             push(linkToRecord(basePath, id, 'show'));
             return;
         }
+        if (path === 'expand') {
+            this.handleToggleExpanded(event);
+            return;
+        }
+        if (!path) return;
 
         push(path);
     };
@@ -128,18 +131,12 @@ class DatagridRow extends Component {
                             padding="none"
                             className={classes.expandIconCell}
                         >
-                            <IconButton
-                                className={classNames(classes.expandIcon, {
-                                    [classes.expanded]: expanded,
-                                })}
-                                component="div"
-                                tabIndex={-1}
-                                aria-hidden="true"
-                                role="expand"
+                            <ExpandRowButton
+                                classes={classes}
+                                expanded={expanded}
+                                expandContentId={`${id}-expand`}
                                 onClick={this.handleToggleExpanded}
-                            >
-                                <ExpandMoreIcon />
-                            </IconButton>
+                            />
                         </TableCell>
                     )}
                     {hasBulkActions && (
@@ -152,36 +149,32 @@ class DatagridRow extends Component {
                             />
                         </TableCell>
                     )}
-                    {React.Children.map(
-                        children,
-                        (field, index) =>
-                            field ? (
-                                <DatagridCell
-                                    key={`${id}-${field.props.source || index}`}
-                                    className={classnames(
-                                        `column-${field.props.source}`,
-                                        classes.rowCell
-                                    )}
-                                    record={record}
-                                    id={id}
-                                    {...{ field, basePath, resource }}
-                                />
-                            ) : null
+                    {React.Children.map(children, (field, index) =>
+                        isValidElement(field) ? (
+                            <DatagridCell
+                                key={`${id}-${field.props.source || index}`}
+                                className={classNames(
+                                    `column-${field.props.source}`,
+                                    classes.rowCell
+                                )}
+                                record={record}
+                                {...{ field, basePath, resource }}
+                            />
+                        ) : null
                     )}
                 </TableRow>
-                {expand &&
-                    expanded && (
-                        <TableRow key={`${id}-expand`}>
-                            <TableCell colSpan={colSpan} role="expand-content">
-                                {React.cloneElement(expand, {
-                                    record,
-                                    basePath,
-                                    resource,
-                                    id: String(id),
-                                })}
-                            </TableCell>
-                        </TableRow>
-                    )}
+                {expand && expanded && (
+                    <TableRow key={`${id}-expand`} id={`${id}-expand`}>
+                        <TableCell colSpan={colSpan}>
+                            {React.cloneElement(expand, {
+                                record,
+                                basePath,
+                                resource,
+                                id: String(id),
+                            })}
+                        </TableCell>
+                    </TableRow>
+                )}
             </Fragment>
         );
     }

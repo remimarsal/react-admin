@@ -289,16 +289,20 @@ By default the component matches choices with the current input searchText. For 
 
 If you want to limit the initial choices shown to the current value only, you can set the `limitChoicesToValue` prop.
 
+When dealing with a large amount of `choices` you may need to limit the number of suggestions that are rendered in order to maintain usable performance. The `shouldRenderSuggestions` is an optional prop that allows you to set conditions on when to render suggestions. An easy way to improve performance would be to skip rendering until the user has entered 2 or 3 characters in the search box. This lowers the result set significantly, and might be all you need (depending on your data set). 
+Ex. `<AutocompleteArrayInput shouldRenderSuggestions={(val) => { return val.trim().length > 2 }} />` would not render any suggestions until the 3rd character was entered. This prop is passed to the underlying `react-autosuggest` component and is documented [here](https://github.com/moroshko/react-autosuggest#should-render-suggestions-prop).
+
 Lastly, `<AutocompleteArrayInput>` renders a [material-ui-chip-input](https://github.com/TeamWertarbyte/material-ui-chip-input) component. Use the `options` attribute to override any of the `<ChipInput>` attributes:
 
 {% raw %}
 ```jsx
 <AutocompleteArrayInput source="category" options={{
-    fullWidth: true,
+    fullWidthInput: true,
 }} />
 ```
 {% endraw %}
 
+**Tip**: Like many other inputs, `<AutocompleteArrayInput>` accept a `fullWidth` prop.
 **Tip**: If you want to populate the `choices` attribute with a list of related records, you should decorate `<AutocompleteArrayInput>` with [`<ReferenceArrayInput>`](#referenceinput), and leave the `choices` empty:
 
 ```jsx
@@ -308,6 +312,17 @@ import { AutocompleteArrayInput, ReferenceArrayInput } from 'react-admin'
     <AutocompleteArrayInput />
 </ReferenceArrayInput>
 ```
+
+If you need to override the props of the suggestions container (a `Popper` element), you can specify them using the `options.suggestionsContainerProps`. For example:
+
+{% raw %}
+```jsx
+<AutocompleteArrayInput source="category" options={{
+    suggestionsContainerProps: {
+        disablePortal: true,
+}} />
+```
+{% endraw %}
 
 **Tip**: `<ReferenceArrayInput>` is a stateless component, so it only allows to *filter* the list of choices, not to *extend* it. If you need to populate the list of choices based on the result from a `fetch` call (and if [`<ReferenceArrayInput>`](#referencearrayinput) doesn't cover your need), you'll have to [write your own Input component](#writing-your-own-input-component) based on [material-ui-chip-input](https://github.com/TeamWertarbyte/material-ui-chip-input).
 
@@ -326,6 +341,8 @@ import { AutocompleteArrayInput, ReferenceArrayInput } from 'react-admin'
 | `optionText` | Optional | <code>string &#124; Function</code> | `name` | Fieldname of record to display in the suggestion item or function which accepts the current record as argument (`(record)=> {string}`) |
 | `setFilter` | Optional | `Function` | null | A callback to inform the `searchText` has changed and new `choices` can be retrieved based on this `searchText`. Signature `searchText => void`. This function is automatically setup when using `ReferenceInput`.  |
 | `suggestionComponent` | Optional | Function | `({ suggestion, query, isHighlighted, props }) => <div {...props} />` | Allows to override how the item is rendered.  |
+| `shouldRenderSuggestions` | Optional | Function | `() => true` | A function that returns a `boolean` to determine whether or not suggestions are rendered. Use this when working with large collections of data to improve performance and user experience. This function is passed into the underlying react-autosuggest component. Ex.`(value) => value.trim() > 2` |
+| `fullWith` | Optional | Boolean | If `true`, the input will take all the form width
 
 ## `<BooleanInput>` and `<NullableBooleanInput>`
 
@@ -361,7 +378,7 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 ![CustomBooleanInputCheckIcon](./img/custom-switch-icon.png)
 
 
-Refer to [Material UI Switch documentation](http://www.material-ui.com/#/components/switch) for more details.
+Refer to [Material UI Switch documentation](http://v1.material-ui.com/api/switch) for more details.
 
 `<NullableBooleanInput />` renders as a dropdown list, allowing to choose between true, false, and null values.
 
@@ -441,17 +458,20 @@ Lastly, use the `options` attribute if you want to override any of Material UI's
 
 {% raw %}
 ```jsx
+import { FavoriteBorder, Favorite } from '@material-ui/icons';
+
 <CheckboxGroupInput source="category" options={{
-    labelPosition: 'right'
+    icon: <FavoriteBorder />,
+    checkedIcon: <Favorite />
 }} />
 ```
 {% endraw %}
 
-Refer to [Material UI Checkbox documentation](http://www.material-ui.com/#/components/checkbox) for more details.
+Refer to [Material UI Checkbox documentation](https://v1.material-ui.com/api/checkbox/) for more details.
 
 ## `<DateInput>`
 
-Ideal for editing dates, `<DateInput>` renders a standard browser [Date Picker](https://material-ui.com/demos/pickers/#date-pickers), so the appearance depends on the browser (and falls back to a text input on safari).
+Ideal for editing dates, `<DateInput>` renders a standard browser [Date Picker](https://v1.material-ui.com/demos/pickers/#date-pickers), so the appearance depends on the browser (and falls back to a text input on safari).
 
 ```jsx
 import { DateInput } from 'react-admin';
@@ -465,7 +485,7 @@ import { DateInput } from 'react-admin';
 
 ## `<DateTimeInput>`
 
-An input for editing dates with time. `<DateTimeInput>` renders a standard browser [Date and Time Picker](https://material-ui.com/demos/pickers/#date-amp-time-pickers), so the appearance depends on the browser (and falls back to a text input on safari).
+An input for editing dates with time. `<DateTimeInput>` renders a standard browser [Date and Time Picker](https://v1.material-ui.com/demos/pickers/#date-amp-time-pickers), so the appearance depends on the browser (and falls back to a text input on safari).
 
 ```jsx
 import { DateTimeInput } from 'react-admin';
@@ -698,7 +718,7 @@ Lastly, use the `options` attribute if you want to override any of Material UI's
 ```
 {% endraw %}
 
-Refer to [Material UI RadioGroup documentation](http://www.material-ui.com/#/components/radio-button) for more details.
+Refer to [Material UI RadioGroup documentation](http://v1.material-ui.com/api/radio-group) for more details.
 
 **Tip**: If you want to populate the `choices` attribute with a list of related records, you should decorate `<RadioButtonGroupInput>` with [`<ReferenceInput>`](#referenceinput), and leave the `choices` empty:
 
@@ -943,7 +963,7 @@ You can customize the rich text editor toolbar using the `toolbar` attribute, as
 
 ## `<SelectInput>`
 
-To let users choose a value in a list using a dropdown, use `<SelectInput>`. It renders using [Material ui's `<SelectField>`](http://www.material-ui.com/#/components/select-field). Set the `choices` attribute to determine the options (with `id`, `name` tuples):
+To let users choose a value in a list using a dropdown, use `<SelectInput>`. It renders using [Material ui's `<Select>`](http://v1.material-ui.com/api/select). Set the `choices` attribute to determine the options (with `id`, `name` tuples):
 
 ```jsx
 import { SelectInput } from 'react-admin';
@@ -989,10 +1009,10 @@ const FullNameField = ({ record }) => <span>{record.first_name} {record.last_nam
 <SelectInput source="gender" choices={choices} optionText={<FullNameField />}/>
 ```
 
-Enabling the `allowEmpty` props adds an empty choice (with `null` value) on top of the options, and makes the value nullable:
+Enabling the `allowEmpty` props adds an empty choice (with a default `null` value, which you can overwrite with the `emptyValue` prop) on top of the options, and makes the value nullable:
 
 ```jsx
-<SelectInput source="category" allowEmpty choices={[
+<SelectInput source="category" allowEmpty emptyValue="" choices={[
     { id: 'programming', name: 'Programming' },
     { id: 'lifestyle', name: 'Lifestyle' },
     { id: 'photography', name: 'Photography' },
@@ -1026,7 +1046,7 @@ Lastly, use the `options` attribute if you want to override any of Material UI's
 ```
 {% endraw %}
 
-Refer to [Material UI SelectField documentation](http://www.material-ui.com/#/components/select-field) for more details.
+Refer to [Material UI Select documentation](http://v1.material-ui.com/api/select) for more details.
 
 **Tip**: If you want to populate the `choices` attribute with a list of related records, you should decorate `<SelectInput>` with [`<ReferenceInput>`](#referenceinput), and leave the `choices` empty:
 
@@ -1068,7 +1088,7 @@ const choices = [
 
 ## `<SelectArrayInput>`
 
-To let users choose several values in a list using a dropdown, use `<SelectArrayInput>`. It renders using [Material ui's `<Select>`](http://www.material-ui.com/#/components/select). Set the `choices` attribute to determine the options (with `id`, `name` tuples):
+To let users choose several values in a list using a dropdown, use `<SelectArrayInput>`. It renders using [Material ui's `<Select>`](http://v1.material-ui.com/api/select). Set the `choices` attribute to determine the options (with `id`, `name` tuples):
 
 ```js
 import { SelectArrayInput } from 'react-admin';
@@ -1125,7 +1145,7 @@ Lastly, use the `options` attribute if you want to override any of the `<Select>
 ```
 {% endraw %}
 
-Refer to [the Select documentation](http://www.material-ui.com/#/components/select) for more details.
+Refer to [the Select documentation](http://v1.material-ui.com/api/select) for more details.
 
 The `SelectArrayInput` component **cannot** be used inside a `ReferenceInput` but can be used inside a `ReferenceArrayInput`.
 
@@ -1270,7 +1290,7 @@ const ItemEdit = (props) => (
 
 ```html
 <span>
-    <input type="number" placeholder="longitude" value={record.lat} />
+    <input type="number" placeholder="latitude" value={record.lat} />
     <input type="number" placeholder="longitude" value={record.lng} />
 </span>
 ```
@@ -1458,8 +1478,8 @@ Here is an example usage for `dispatch`: A country input that resets a city inpu
 
 ```jsx
 
-import React, { Fragment } from 'react'
-import { change } from 'redux-form'
+import React, { Fragment } from 'react';
+import { change } from 'redux-form';
 import { FormDataConsumer, REDUX_FORM_NAME } from 'react-admin';
 
 const OrderEdit = (props) => (

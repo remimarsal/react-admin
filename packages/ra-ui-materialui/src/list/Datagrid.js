@@ -1,7 +1,12 @@
-import React, { Component } from 'react';
+import React, {
+    Component,
+    isValidElement,
+    Children,
+    cloneElement,
+} from 'react';
 import PropTypes from 'prop-types';
 import { sanitizeListRestProps } from 'ra-core';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, createStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
@@ -14,51 +19,52 @@ import DatagridHeaderCell from './DatagridHeaderCell';
 import DatagridBody from './DatagridBody';
 import DatagridLoading from './DatagridLoading';
 
-const styles = theme => ({
-    table: {
-        tableLayout: 'auto',
-    },
-    thead: {},
-    tbody: {
-        height: 'inherit',
-    },
-    headerRow: {},
-    headerCell: {
-        padding: '0 12px',
-        '&:last-child': {
-            padding: '0 12px',
+const styles = theme =>
+    createStyles({
+        table: {
+            tableLayout: 'auto',
         },
-    },
-    checkbox: {},
-    row: {},
-    clickableRow: {
-        cursor: 'pointer',
-    },
-    rowEven: {},
-    rowOdd: {},
-    rowCell: {
-        padding: '0 12px',
-        '&:last-child': {
-            padding: '0 12px',
+        thead: {},
+        tbody: {
+            height: 'inherit',
         },
-    },
-    expandHeader: {
-        padding: 0,
-        width: 48,
-    },
-    expandIconCell: {
-        width: 48,
-    },
-    expandIcon: {
-        transform: 'rotate(-90deg)',
-        transition: theme.transitions.create('transform', {
-            duration: theme.transitions.duration.shortest,
-        }),
-    },
-    expanded: {
-        transform: 'rotate(0deg)',
-    },
-});
+        headerRow: {},
+        headerCell: {
+            padding: '0 12px',
+            '&:last-child': {
+                padding: '0 12px',
+            },
+        },
+        checkbox: {},
+        row: {},
+        clickableRow: {
+            cursor: 'pointer',
+        },
+        rowEven: {},
+        rowOdd: {},
+        rowCell: {
+            padding: '0 12px',
+            '&:last-child': {
+                padding: '0 12px',
+            },
+        },
+        expandHeader: {
+            padding: 0,
+            width: 48,
+        },
+        expandIconCell: {
+            width: 48,
+        },
+        expandIcon: {
+            transform: 'rotate(-90deg)',
+            transition: theme.transitions.create('transform', {
+                duration: theme.transitions.duration.shortest,
+            }),
+        },
+        expanded: {
+            transform: 'rotate(0deg)',
+        },
+    });
 
 /**
  * The Datagrid component renders a list of records as a table.
@@ -200,27 +206,26 @@ class Datagrid extends Component {
                                 />
                             </TableCell>
                         )}
-                        {React.Children.map(
-                            children,
-                            (field, index) =>
-                                field ? (
-                                    <DatagridHeaderCell
-                                        className={classes.headerCell}
-                                        currentSort={currentSort}
-                                        field={field}
-                                        isSorting={
-                                            currentSort.field ===
-                                            (field.props.sortBy || field.props.source)
-                                        }
-                                        key={field.props.source || index}
-                                        resource={resource}
-                                        updateSort={this.updateSort}
-                                    />
-                                ) : null
+                        {Children.map(children, (field, index) =>
+                            isValidElement(field) ? (
+                                <DatagridHeaderCell
+                                    className={classes.headerCell}
+                                    currentSort={currentSort}
+                                    field={field}
+                                    isSorting={
+                                        currentSort.field ===
+                                        (field.props.sortBy ||
+                                            field.props.source)
+                                    }
+                                    key={field.props.source || index}
+                                    resource={resource}
+                                    updateSort={this.updateSort}
+                                />
+                            ) : null
                         )}
                     </TableRow>
                 </TableHead>
-                {React.cloneElement(
+                {cloneElement(
                     body,
                     {
                         basePath,
@@ -253,9 +258,9 @@ Datagrid.propTypes = {
     classes: PropTypes.object,
     className: PropTypes.string,
     currentSort: PropTypes.shape({
-        sort: PropTypes.string,
+        field: PropTypes.string,
         order: PropTypes.string,
-    }).isRequired,
+    }),
     data: PropTypes.object.isRequired,
     expand: PropTypes.node,
     hasBulkActions: PropTypes.bool.isRequired,

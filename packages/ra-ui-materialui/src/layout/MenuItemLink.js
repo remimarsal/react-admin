@@ -3,19 +3,20 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { NavLink } from 'react-router-dom';
 import MenuItem from '@material-ui/core/MenuItem';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, createStyles } from '@material-ui/core/styles';
 
-const styles = theme => ({
-    root: {
-        color: theme.palette.text.secondary,
-        display: 'flex',
-        alignItems: 'flex-start',
-    },
-    active: {
-        color: theme.palette.text.primary,
-    },
-    icon: { paddingRight: '1.2em' },
-});
+const styles = theme =>
+    createStyles({
+        root: {
+            color: theme.palette.text.secondary,
+            display: 'flex',
+            alignItems: 'flex-start',
+        },
+        active: {
+            color: theme.palette.text.primary,
+        },
+        icon: { paddingRight: '1.2em' },
+    });
 
 export class MenuItemLink extends Component {
     static propTypes = {
@@ -23,12 +24,13 @@ export class MenuItemLink extends Component {
         className: PropTypes.string,
         leftIcon: PropTypes.node,
         onClick: PropTypes.func,
-        primaryText: PropTypes.string,
+        primaryText: PropTypes.node,
         staticContext: PropTypes.object,
-        to: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
+        to: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
+            .isRequired,
     };
 
-    handleMenuTap = (e) => {
+    handleMenuTap = e => {
         this.props.onClick && this.props.onClick(e);
     };
 

@@ -92,7 +92,10 @@ describe('<AutocompleteInput />', () => {
     it('should use optionText with a string value as text identifier', () => {
         const wrapper = shallow(
             <AutocompleteInput {...defaultProps} optionText="foobar" />,
-            { context, childContextTypes }
+            {
+                context,
+                childContextTypes,
+            }
         );
 
         // This is necesary because we use the material-ui Popper element which does not includes
@@ -214,9 +217,7 @@ describe('<AutocompleteInput />', () => {
             { context, childContextTypes }
         );
         wrapper.find('input').simulate('focus');
-        wrapper
-            .find('input')
-            .simulate('change', { target: { value: 'foo' } });
+        wrapper.find('input').simulate('change', { target: { value: 'foo' } });
         expect(wrapper.state('searchText')).toBe('foo');
         expect(wrapper.state('suggestions')).toHaveLength(1);
         expect(wrapper.find('ListItem')).toHaveLength(0);
@@ -351,7 +352,10 @@ describe('<AutocompleteInput />', () => {
         it('should show the suggestions when the input value is null and the input is focussed and choices arrived late', () => {
             const wrapper = mount(
                 <AutocompleteInput {...defaultProps} input={{ value: '' }} />,
-                { context, childContextTypes }
+                {
+                    context,
+                    childContextTypes,
+                }
             );
             wrapper.setProps({
                 choices: [
@@ -363,26 +367,6 @@ describe('<AutocompleteInput />', () => {
             expect(wrapper.find('ListItem')).toHaveLength(2);
         });
 
-        it('should resolve value from input value', () => {
-            const onChange = jest.fn();
-            const wrapper = mount(
-                <AutocompleteInput
-                    {...defaultProps}
-                    input={{ value: '', onChange }}
-                />,
-                { context, childContextTypes }
-            );
-            wrapper.setProps({
-                choices: [{ id: 'M', name: 'Male' }],
-            });
-            wrapper
-                .find('input')
-                .simulate('change', { target: { value: 'male' } });
-            expect(wrapper.state('searchText')).toBe('Male');
-            expect(onChange).toHaveBeenCalledTimes(1);
-            expect(onChange).toHaveBeenCalledWith('M');
-        });
-
         it('should reset filter when input value changed', () => {
             const setFilter = jest.fn();
             const wrapper = mount(
@@ -391,7 +375,10 @@ describe('<AutocompleteInput />', () => {
                     input={{ value: 1 }}
                     setFilter={setFilter}
                 />,
-                { context, childContextTypes }
+                {
+                    context,
+                    childContextTypes,
+                }
             );
             wrapper
                 .find('input')
@@ -530,7 +517,7 @@ describe('<AutocompleteInput />', () => {
         expect(wrapper.state('suggestions')).toHaveLength(2);
     });
 
-    it('automatically selects a matched choice if there is only one', () => {
+    it('does not automatically select a matched choice if there is only one', () => {
         const onChange = jest.fn();
 
         const wrapper = mount(
@@ -548,7 +535,6 @@ describe('<AutocompleteInput />', () => {
         wrapper.find('input').simulate('focus');
         wrapper.find('input').simulate('change', { target: { value: 'abc' } });
         expect(wrapper.state('suggestions')).toHaveLength(1);
-        expect(onChange).toHaveBeenCalledWith(2);
     });
 
     it('passes options.suggestionsContainerProps to the suggestions container', () => {
@@ -566,7 +552,7 @@ describe('<AutocompleteInput />', () => {
                 options={{
                     suggestionsContainerProps: {
                         disablePortal: true,
-                    }
+                    },
                 }}
             />,
             { context, childContextTypes }

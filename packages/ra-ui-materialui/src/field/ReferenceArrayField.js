@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { Children } from 'react';
 import PropTypes from 'prop-types';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, createStyles } from '@material-ui/core/styles';
 import { ReferenceArrayFieldController } from 'ra-core';
+import { fieldPropTypes } from './types';
 
-const styles = {
+const styles = createStyles({
     progress: { marginTop: '1em' },
-};
+});
 
 export const ReferenceArrayFieldView = ({
     children,
@@ -22,7 +23,7 @@ export const ReferenceArrayFieldView = ({
         return <LinearProgress className={classes.progress} />;
     }
 
-    return React.cloneElement(children, {
+    return React.cloneElement(Children.only(children), {
         className,
         resource: reference,
         ids,
@@ -114,5 +115,13 @@ const EnhancedReferenceArrayField = withStyles(styles)(ReferenceArrayField);
 EnhancedReferenceArrayField.defaultProps = {
     addLabel: true,
 };
+
+EnhancedReferenceArrayField.propTypes = {
+    ...fieldPropTypes,
+    reference: PropTypes.string,
+    children: PropTypes.element.isRequired,
+};
+
+EnhancedReferenceArrayField.displayName = 'EnhancedReferenceArrayField';
 
 export default EnhancedReferenceArrayField;

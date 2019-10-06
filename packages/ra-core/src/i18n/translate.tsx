@@ -9,7 +9,7 @@ import {
 /**
  * Higher-Order Component for getting access to the `translate` function in props.
  *
- * Requires that the app is decorated by the <TranslationPRovider> to inject
+ * Requires that the app is decorated by the <TranslationProvider> to inject
  * the translation dictionaries and function in the context.
  *
  * @example
@@ -36,7 +36,6 @@ const MyHelloButton = ({ translate }) => (
 );`
     );
 
-    // tslint:disable-next-line:no-shadowed-variable
     const {
         translate: translateToDiscard,
         ...defaultProps

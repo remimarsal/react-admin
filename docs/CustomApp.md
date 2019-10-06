@@ -5,7 +5,7 @@ title: "Including the Admin in Another App"
 
 # Including React-Admin In Another Redux Application
 
-The `<Admin>` tag is a great shortcut got be up and running with react-admin in minutes. However, in many cases, you will want to embed the admin in another application, or customize the admin redux store deeply.
+The `<Admin>` tag is a great shortcut to be up and running with react-admin in minutes. However, in many cases, you will want to embed the admin in another application, or customize the admin redux store deeply.
 
 **Tip**: Before going for the Custom App route, explore all the options of [the `<Admin>` component](./Admin.md). They allow you to add custom routes, custom reducers, custom sagas, and customize the layout.
 
@@ -19,8 +19,9 @@ Here is the default store creation for react-admin:
 
 ```js
 // in src/createAdminStore.js
-import { combineReducers, createStore, compose, applyMiddleware } from 'redux';
-import { routerMiddleware } from 'react-router-redux';
+import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
+import { routerMiddleware, routerReducer } from 'react-router-redux';
+import { reducer as formReducer } from 'redux-form';
 import createSagaMiddleware from 'redux-saga';
 import { all, fork } from 'redux-saga/effects';
 import {
@@ -81,7 +82,7 @@ export default ({
 };
 ```
 
-You can use this script as a base and then add your own middleares or enhancers, e.g. to allow store persistence with [redux-persist](https://github.com/rt2zz/redux-persist).
+You can use this script as a base and then add your own middlewares or enhancers, e.g., to allow store persistence with [redux-persist](https://github.com/rt2zz/redux-persist).
 
 Then, use the `<Admin>` component as you would in a standalone application. Here is an example with 3 resources: `posts`, `comments`, and `users`
 
@@ -89,7 +90,7 @@ Then, use the `<Admin>` component as you would in a standalone application. Here
 // in src/App.js
 import React from 'react';
 import { Provider } from 'react-redux';
-import createHistory from 'history/createHashHistory';
+import { createHashHistory } from 'history';
 import { Admin, Resource } from 'react-admin';
 import restProvider from 'ra-data-simple-rest';
 import defaultMessages from 'ra-language-english';
@@ -112,7 +113,7 @@ const i18nProvider = locale => {
     }
     return defaultMessages;
 };
-const history = createHistory();
+const history = createHashHistory();
 
 const App = () => (
     <Provider
@@ -150,7 +151,7 @@ Here is the main code for bootstrapping a barebones react-admin application with
 // in src/App.js
 import React from 'react';
 import { Provider } from 'react-redux';
-import createHistory from 'history/createHashHistory';
+import { createHashHistory } from 'history';
 +import { ConnectedRouter } from 'react-router-redux';
 +import { Switch, Route } from 'react-router-dom';
 +import withContext from 'recompose/withContext';
@@ -181,7 +182,7 @@ const i18nProvider = locale => {
     }
     return defaultMessages;
 };
-const history = createHistory();
+const history = createHashHistory();
 
 const App = () => (
     <Provider

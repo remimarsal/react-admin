@@ -1,26 +1,23 @@
 /* eslint react/jsx-key: off */
 import PeopleIcon from '@material-ui/icons/People';
-import SearchIcon from '@material-ui/icons/Search';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import memoize from 'lodash/memoize';
 
 import React from 'react';
 import {
+    BulkDeleteWithConfirmButton,
     Datagrid,
-    EditButton,
     Filter,
     List,
     Responsive,
     SearchInput,
-    ShowButton,
     SimpleList,
     TextField,
     TextInput,
 } from 'react-admin';
-export const UserIcon = PeopleIcon;
 
 import Aside from './Aside';
 import UserEditEmbedded from './UserEditEmbedded';
+export const UserIcon = PeopleIcon;
 
 const UserFilter = ({ permissions, ...props }) => (
     <Filter {...props}>
@@ -28,6 +25,10 @@ const UserFilter = ({ permissions, ...props }) => (
         <TextInput source="name" />
         {permissions === 'admin' ? <TextInput source="role" /> : null}
     </Filter>
+);
+
+const UserBulkActionButtons = props => (
+    <BulkDeleteWithConfirmButton {...props} />
 );
 
 const rowClick = memoize(permissions => (id, basePath, record) => {
@@ -43,6 +44,7 @@ const UserList = ({ permissions, ...props }) => (
         filterDefaultValues={{ role: 'user' }}
         sort={{ field: 'name', order: 'ASC' }}
         aside={<Aside />}
+        bulkActionButtons={<UserBulkActionButtons />}
     >
         <Responsive
             small={

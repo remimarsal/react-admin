@@ -21,7 +21,7 @@ Luckily, react-admin provides access to a `TestContext` wrapper component that c
 
 ```jsx
 import React from 'react';
-import { TestContext } from 'ra-core';
+import { TestContext } from 'react-admin';
 import { mount } from 'enzyme';
 import MyCustomEditView from './my-custom-edit-view';
 
@@ -54,7 +54,7 @@ At this point, your component should `mount` without errors and you can unit tes
 
 ## Enabling reducers to ensure actions are dispatched
 
-If you component relies on a a reducer, e.g. redux-form submission, you can enable reducers using the `enableReducers` prop:
+If you component relies on a reducer, e.g. redux-form submission, you can enable reducers using the `enableReducers` prop:
 
 ```jsx
 myCustomEditView = mount(

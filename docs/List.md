@@ -128,7 +128,7 @@ const PostActions = ({
         />
         <RefreshButton />
         {/* Add your custom actions */}
-        <Button primary onClick={customAction}>Custom Action</Button>
+        <Button color="primary" onClick={customAction}>Custom Action</Button>
     </CardActions>
 );
 
@@ -174,7 +174,7 @@ import { unparse as convertToCSV } from 'papaparse/papaparse.min';
 
 const exporter = posts => {
     const postsForExport = posts.map(post => {
-        const { postForExport, backlinks, author } = post; // omit backlinks and author
+        const { backlinks, author, ...postForExport } = post; // omit backlinks and author
         postForExport.author_name = post.author.name; // add a field
         return postForExport;
     });
@@ -400,7 +400,7 @@ It does so by inspecting its `context` prop.
 
 **Tip**: Don't mix up this `filters` prop, expecting a React element, with the `filter` props, which expects an object to define permanent filters (see below).
 
-The `Filter` component accepts the usual `className` prop but you can override many class names injected to the inner components by React-admin thanks to the `classes` property (as most Material UI components, see their [documentation about it](https://material-ui.com/customization/overrides/#overriding-with-classes)). This property accepts the following keys:
+The `Filter` component accepts the usual `className` prop but you can override many class names injected to the inner components by React-admin thanks to the `classes` property (as most Material UI components, see their [documentation about it](https://v1.material-ui.com/customization/overrides/#overriding-with-classes)). This property accepts the following keys:
 
 * `form`: applied to the root element when rendering as a form.
 * `button`: applied to the root element when rendering as a button.
@@ -572,12 +572,12 @@ const PostPagination = ({ page, perPage, total, setPage }) => {
         nbPages > 1 &&
             <Toolbar>
                 {page > 1 &&
-                    <Button primary key="prev" icon={<ChevronLeft />} onClick={() => setPage(page - 1)}>
+                    <Button color="primary" key="prev" icon={<ChevronLeft />} onClick={() => setPage(page - 1)}>
                         Prev
                     </Button>
                 }
                 {page !== nbPages &&
-                    <Button primary key="next" icon={<ChevronRight />} onClick={() => setPage(page + 1)} labelPosition="before">
+                    <Button color="primary" key="next" icon={<ChevronRight />} onClick={() => setPage(page + 1)} labelPosition="before">
                         Next
                     </Button>
                 }
@@ -637,7 +637,7 @@ const Aside = ({ data, ids }) => (
     <div style={{ width: 200, margin: '1em' }}>
         <Typography variant="title">Posts stats</Typography>
         <Typography variant="body1">
-            Total views: {ids.map(id => data[id]).reduce((sum, post) => sum + post.views)}
+            Total views: {ids.map(id => data[id]).reduce((sum, post) => sum + post.views, 0)}
         </Typography>
     </div>
 );
@@ -646,7 +646,7 @@ const Aside = ({ data, ids }) => (
 
 ### CSS API
 
-The `List` component accepts the usual `className` prop but you can override many class names injected to the inner components by React-admin thanks to the `classes` property (as most Material UI components, see their [documentation about it](https://material-ui.com/customization/overrides/#overriding-with-classes)). This property accepts the following keys:
+The `List` component accepts the usual `className` prop but you can override many class names injected to the inner components by React-admin thanks to the `classes` property (as most Material UI components, see their [documentation about it](https://v1.material-ui.com/customization/overrides/#overriding-with-classes)). This property accepts the following keys:
 
 * `root`: alternative to using `className`. Applied to the root element.
 * `header`: applied to the page header
@@ -821,6 +821,7 @@ export const PostList = (props) => (
 
 * "edit" to redirect to the edition vue
 * "show" to redirect to the show vue
+* "expand" to open the `expand` panel
 * a function `(id, basePath, record) => path` to redirect to a custom path
 
 **Tip**: If you pass a function, it can return `edit`, `show` or a router path. This allows to redirect to either `edit` or `show` after checking a condition on the record. For example:
@@ -928,7 +929,7 @@ const PostList = props => (
 
 ### CSS API
 
-The `Datagrid` component accepts the usual `className` prop but you can override many class names injected to the inner components by React-admin thanks to the `classes` property (as most Material UI components, see their [documentation about it](https://material-ui.com/customization/overrides/#overriding-with-classes)). This property accepts the following keys:
+The `Datagrid` component accepts the usual `className` prop but you can override many class names injected to the inner components by React-admin thanks to the `classes` property (as most Material UI components, see their [documentation about it](https://v1.material-ui.com/customization/overrides/#overriding-with-classes)). This property accepts the following keys:
 
 * `table`: alternative to using `className`. Applied to the root element.
 * `tbody`: applied to the tbody
@@ -994,7 +995,7 @@ export default withStyles(styles)(PostList);
 
 ## The `<SimpleList>` component
 
-For mobile devices, a `<Datagrid>` is often unusable - there is simply not enough space to display several columns. The convention in that case is to use a simple list, with only one column per row. The `<SimpleList>` component serves that purpose, leveraging [material-ui's `<List>` and `<ListItem>` components](http://www.material-ui.com/#/components/list). You can use it as `<List>` or `<ReferenceManyField>` child:
+For mobile devices, a `<Datagrid>` is often unusable - there is simply not enough space to display several columns. The convention in that case is to use a simple list, with only one column per row. The `<SimpleList>` component serves that purpose, leveraging [material-ui's `<List>` and `<ListItem>` components](https://v1.material-ui.com/demos/lists/). You can use it as `<List>` or `<ReferenceManyField>` child:
 
 ```jsx
 // in src/posts.js
@@ -1180,6 +1181,9 @@ import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
+import Avatar from '@material-ui/core/Avatar';
+import PersonIcon from '@material-ui/core/Avatar';
+import { List, TextField, DateField, ReferenceField, EditButton } from "react-admin";
 
 const cardStyle = {
     width: 300,

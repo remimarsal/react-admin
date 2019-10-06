@@ -43,7 +43,8 @@ Here are all the props accepted by the component:
     - [`logoutButton`](#logoutbutton)
     - [`initialState`](#initialstate)
     - [`history`](#history)
-    - [Internationalization](#internationalization)
+    - [`locale`](#internationalization)
+    - [`i18nProvider`](#internationalization)
     - [Declaring resources at runtime](#declaring-resources-at-runtime)
     - [Using react-admin without `<Admin>` and `<Resource>`](#using-react-admin-without-admin-and-resource)
 
@@ -172,8 +173,9 @@ const Menu = ({ resources, onMenuClick, logout }) => (
     <div>
         {resources.map(resource => (
             <MenuItemLink
+                key={resource.name}
                 to={`/${resource.name}`}
-                primaryText={resource.name}
+                primaryText={resource.options && resource.options.label || resource.name}
                 leftIcon={createElement(resource.icon)}
                 onClick={onMenuClick}
             />
@@ -220,7 +222,7 @@ See the [Theming documentation](./Theming.md#using-a-custom-menu) for more detai
 
 ## `theme`
 
-Material UI supports [theming](http://www.material-ui.com/#/customization/themes). This lets you customize the look and feel of an admin by overriding fonts, colors, and spacing. You can provide a custom material ui theme by using the `theme` prop:
+Material UI supports [theming](http://v1.material-ui.com/customization/themes). This lets you customize the look and feel of an admin by overriding fonts, colors, and spacing. You can provide a custom material ui theme by using the `theme` prop:
 
 ```jsx
 import { createMuiTheme } from '@material-ui/core/styles';
@@ -240,7 +242,7 @@ const App = () => (
 
 ![Dark theme](./img/dark-theme.png)
 
-For more details on predefined themes and custom themes, refer to the [Material UI Customization documentation](https://material-ui.com/customization/themes/).
+For more details on predefined themes and custom themes, refer to the [Material UI Customization documentation](https://v1.material-ui.com/customization/themes/).
 
 ## `appLayout`
 
@@ -432,10 +434,12 @@ const Foo = () => (
             ...
         </CardContent>
     </Card>
-));
+);
 
 export default Foo;
 ```
+
+**Tip**: Custom routes can be [a `<Redirect>` route](https://reacttraining.com/react-router/web/api/Redirect), too. 
 
 ## `authProvider`
 
@@ -505,7 +509,7 @@ By default, react-admin creates URLs using a hash sign (e.g. "myadmin.acme.com/#
 You can create your own `history` function (compatible with [the `history` npm package](https://github.com/reacttraining/history)), and pass it to the `<Admin>` component to override the default history strategy. For instance, to use `browserHistory`:
 
 ```js
-import createHistory from 'history/createBrowserHistory';
+import { createBrowserHistory as createHistory } from 'history';
 
 const history = createHistory();
 
@@ -518,7 +522,7 @@ const App = () => (
 
 ## Internationalization
 
-The `locale` and `messages` props let you translate the GUI. The [Translation Documentation](./Translation.md) details this process.
+The `locale` and `i18nProvider` props let you translate the GUI. The [Translation Documentation](./Translation.md) details this process.
 
 ## Declaring resources at runtime
 

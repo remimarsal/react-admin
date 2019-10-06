@@ -12,7 +12,7 @@ describe('List Page', () => {
 
     describe('Title', () => {
         it('should show the correct title in the appBar', () => {
-            cy.get(ListPagePosts.elements.title).contains('Posts List');
+            cy.get(ListPagePosts.elements.title).contains('Posts');
         });
     });
 
@@ -24,7 +24,9 @@ describe('List Page', () => {
             cy.viewport(1280, 500);
 
             cy.scrollTo(0, 200);
-            cy.get(ListPagePosts.elements.headroomUnpinned).should('not.be.visible');
+            cy.get(ListPagePosts.elements.headroomUnpinned).should(
+                'not.be.visible'
+            );
 
             cy.scrollTo(0, -100);
             cy.get(ListPagePosts.elements.headroomUnfixed).should('be.visible');
@@ -108,6 +110,15 @@ describe('List Page', () => {
             );
             cy.contains('1-1 of 1');
             ListPagePosts.setFilterValue('q', '');
+        });
+
+        it('should allow to disable alwaysOn filters with default value', () => {
+            LoginPage.navigate();
+            LoginPage.login('admin', 'password');
+            ListPageUsers.navigate();
+            cy.contains('1-2 of 2');
+            cy.get('button[title="Remove this filter"]').click();
+            cy.contains('1-3 of 3');
         });
     });
 
@@ -196,40 +207,45 @@ describe('List Page', () => {
     describe('expand panel', () => {
         it('should show an expand button opening the expand element', () => {
             cy.contains('1-10 of 13'); // wait for data
-            cy.get('[role="expand"]')
+            cy.get('[aria-label="Expand"]')
                 .eq(0)
-                .click();
-            cy.get('[role="expand-content"]').should(el =>
+                .click()
+                .should(el => expect(el).to.have.attr('aria-expanded', 'true'))
+                .should(el => expect(el).to.have.attr('aria-label', 'Close'));
+
+            cy.get('#13-expand').should(el =>
                 expect(el).to.contain(
                     'Curabitur eu odio ullamcorper, pretium sem at, blandit libero. Nulla sodales facilisis libero, eu gravida tellus ultrices nec. In ut gravida mi. Vivamus finibus tortor tempus egestas lacinia. Cras eu arcu nisl. Donec pretium dolor ipsum, eget feugiat urna iaculis ut.'
                 )
-            );
-            cy.get('.datagrid-body').should(el =>
-                expect(el).to.not.contain('[role="expand-content"]')
             );
         });
 
         it('should accept multiple expands', () => {
             cy.contains('1-10 of 13'); // wait for data
-            cy.get('[role="expand"]')
+            cy.get('[aria-label="Expand"]')
                 .eq(0)
-                .click();
-            cy.get('[role="expand"]')
-                .eq(1)
-                .click();
-            cy.get('[role="expand-content"]').should(el =>
-                expect(el).to.have.length(2)
-            );
+                .click()
+                .should(el => expect(el).to.have.attr('aria-expanded', 'true'))
+                .should(el => expect(el).to.have.attr('aria-label', 'Close'));
+            cy.get('#13-expand').should(el => expect(el).to.exist);
+            cy.get('[aria-label="Expand"]')
+                .eq(0)
+                .click()
+                .should(el => expect(el).to.have.attr('aria-expanded', 'true'))
+                .should(el => expect(el).to.have.attr('aria-label', 'Close'));
+            cy.get('#12-expand').should(el => expect(el).to.exist);
         });
     });
 
-    describe("Sorting", () => {
+    describe('Sorting', () => {
         it('should display a sort arrow when clicking on a sortable column header', () => {
             ListPagePosts.toggleColumnSort('id');
             cy.get(ListPagePosts.elements.svg('id')).should('be.visible');
 
             ListPagePosts.toggleColumnSort('tags.name');
-            cy.get(ListPagePosts.elements.svg('tags.name')).should('be.visible');
+            cy.get(ListPagePosts.elements.svg('tags.name')).should(
+                'be.visible'
+            );
         });
 
         it('should hide the sort arrow when clicking on another sortable column header', () => {
@@ -241,10 +257,20 @@ describe('List Page', () => {
         it('should reverse the sort arrow when clicking on an already sorted column header', () => {
             ListPagePosts.toggleColumnSort('published_at');
             ListPagePosts.toggleColumnSort('tags.name');
-            cy.get(ListPagePosts.elements.svg('tags.name', '[class*=iconDirectionAsc]')).should('exist');
+            cy.get(
+                ListPagePosts.elements.svg(
+                    'tags.name',
+                    '[class*=iconDirectionAsc]'
+                )
+            ).should('exist');
 
             ListPagePosts.toggleColumnSort('tags.name');
-            cy.get(ListPagePosts.elements.svg('tags.name', '[class*=iconDirectionDesc]')).should('exist');
+            cy.get(
+                ListPagePosts.elements.svg(
+                    'tags.name',
+                    '[class*=iconDirectionDesc]'
+                )
+            ).should('exist');
         });
-    })
+    });
 });
